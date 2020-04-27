@@ -67,7 +67,7 @@ module.exports = {
       return { user, token: access_token }
     },
 
-    addFakeUsers: async (root, { count }, { db }) => {
+    addFakeUsers: async (root, { count }, { db, pubsub }) => {
       var randomUserApi = `https://randomuser.me/api/?results=${count}`
 
       var { results } = await fetch(randomUserApi).then(res => res.json())
@@ -80,6 +80,13 @@ module.exports = {
       }))
 
       await db.collection('users').insert(users)
+      var newUsers = await db.collection('users')
+        .find()
+        .sort({ _id: -1 })
+        .limit(count)
+        .toArray()
+
+      newUsers.forEach(newUser => pubsub.publish('user-added', {newUser}))
 
       return users
     },
