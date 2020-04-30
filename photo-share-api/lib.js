@@ -47,4 +47,15 @@ const uploadFile = async (file, path) => {
     return saveFile(stream, path)
 }
 
-module.exports = {findBy, authorizeWithGithub, generateFakeUsers, uploadFile}
+const uploadStream = (stream, path) =>
+    new Promise((resolve, reject) => {
+        stream.on('error', error => {
+            if (stream.truncated) {
+                fs.unlinkSync(path)
+            }
+            reject(error)
+        }).on('end', resolve)
+        .pipe(fs.createWriteStream(path))
+    })
+
+module.exports = {findBy, authorizeWithGithub, generateFakeUsers, uploadStream, uploadFile}

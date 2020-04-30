@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb')
 const { readFileSync } = require('fs')
 const expressPlayground = require('graphql-playground-middleware-express').default
 const resolvers = require('./resolvers')
-
+const path = require('path')
 const { createServer } = require('http')
 
 require('dotenv').config()
@@ -52,6 +52,11 @@ async function start() {
     let url = `https://github.com/login/oauth/authorize?client_id=${process.env.CLIENT_ID}&scope=user`
     res.end(`<a href="${url}">Sign In with Github</a>`)
   })
+
+  app.use(
+    '/img/photos',
+    express.static(path.join(__dirname, 'assets', 'photos'))
+  )
 
   const httpServer = createServer(app)
   // WebSocketを動作させるためのコード
