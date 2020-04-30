@@ -2,10 +2,11 @@ import React from 'react'
 import { render } from 'react-dom'
 import App from './App'
 import { ApolloProvider } from 'react-apollo'
-import { ApolloClient, InMemoryCache, HttpLink, ApolloLink, split } from 'apollo-boost'
+import { ApolloClient, InMemoryCache, ApolloLink, split } from 'apollo-boost'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import { persistCache } from 'apollo-cache-persist'
+import { createUploadLink } from 'apollo-upload-client'
 
 const cache = new InMemoryCache()
 persistCache({
@@ -18,7 +19,7 @@ if (localStorage['apollo-cache-persist']) {
     cache.restore(cacheData)
 }
 
-const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' })
+const httpLink = new createUploadLink({ uri: 'http://localhost:4000/graphql' })
 const wsLink = new WebSocketLink({
     uri: 'ws://localhost:4000/graphql',
     options: { reconnect: true }
